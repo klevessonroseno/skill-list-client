@@ -2,14 +2,28 @@ import React from 'react';
 import {
   StyleSheet,
   TouchableOpacity,
-  Text
+  Text,
+  TouchableOpacityProps
 } from 'react-native';
 
-export function SkillCard({ skill }) {
+interface SkillCardProps extends TouchableOpacityProps {
+  skill: {
+    name: string;
+    level: string;
+  }
+}
+
+export function SkillCard({ skill, ...rest }: SkillCardProps) {
   return (
-    <TouchableOpacity style={styles.buttonSkills}>
+    <TouchableOpacity 
+      style={styles.buttonSkills}
+      {...rest}
+    >
         <Text style={styles.textSkills}>
-          {skill}
+          <Text style={styles.title}>Tecnologia:</Text> {skill.name}
+        </Text>
+        <Text style={styles.textSkills}>
+          <Text style={styles.title}>Experiência:</Text> {skill.level}
         </Text>
     </TouchableOpacity>
   );
@@ -17,15 +31,18 @@ export function SkillCard({ skill }) {
 
 const styles = StyleSheet.create({
   buttonSkills: {
-    backgroundColor: '#1F1E25',
     padding: 15,
-    borderRadius: 50,
-    alignItems: 'center',
-    marginVertical: 10
+    alignItems: 'flex-start',
+  },
+  title: {
+    color: '#C4AEE8',
+    fontSize: 22,
+    fontWeight: 'bold',
   },
   textSkills: {
     color: '#fff',
     fontSize: 22,
     fontWeight: 'bold',
+    marginHorizontal: 15,
   },
 });
