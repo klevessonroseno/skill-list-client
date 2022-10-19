@@ -5,37 +5,61 @@ import {
   TextInput, 
   Platform,
   SafeAreaView,
-  FlatList
+  FlatList,
+  TouchableOpacity,
+  View
 } from 'react-native';
 import { Button } from '../components/Button';
 import { SkillCard } from '../components/SkillCard';
 
+interface SkillData {
+  id: string;
+  name: string;
+  level: string;
+}
 
 export function Home() {
-  const [newSkill, setNewSkill] = useState('');
-  const [mySkills, setMySkills] = useState([]);
+  const [newSkillName, setNewSkillName] = useState('');
+  const [newSkillLevel, setNewSkillLevel] = useState('');
+
+  const [mySkills, setMySkills] = useState<SkillData[]>([]);
+
   const [greeting, setGreeting] = useState('');
 
   function handleAddNewSkill() {
-    setMySkills(oldState => [...oldState, newSkill]);
+    
+    const data: SkillData = {
+      id: String(new Date().getTime()),
+      name: newSkillName,
+      level: newSkillLevel,
+    };
+
+    setMySkills(oldState => [...oldState, data]);
+  
+  }
+
+  function handleRemoveSkill(id: string) {
+    setMySkills(oldState => oldState.filter(
+      skill => skill.id !== id
+    ));
   }
 
   useEffect(() => {
     const currentHour = new Date().getHours();
 
     if(currentHour < 12) {
-      setGreeting('Good morning');
+      setGreeting('Bom dia!');
     }else if(currentHour >= 12 && currentHour < 18) {
-      setGreeting('Good Afternoon');
+      setGreeting('Boa tarde!');
     }else {
-      setGreeting('Good Nigth');
+      setGreeting('Boa noite!');
     }
   }, []);
 
   return (
     <SafeAreaView style={styles.container}>
       <Text style={styles.title}>
-        Welcome, Klevesson!
+        Seja bem vindo, Klevesson!
       </Text>
 
       <Text style={styles.greetings}>
@@ -44,24 +68,48 @@ export function Home() {
       
       <TextInput 
         style={styles.input}
-        placeholder="New Skill"
+        placeholder="Nome da tecnologia"
         placeholderTextColor="#555"
-        onChangeText={setNewSkill}
+        onChangeText={setNewSkillName}
       />
 
-      <Button onPress={handleAddNewSkill} />
+      <TextInput 
+        style={styles.input}
+        placeholder="Experiência"
+        placeholderTextColor="#555"
+        onChangeText={setNewSkillLevel}
+      />
 
-      <Text 
-        style={[styles.title, {marginVertical: 50}]}
-      >
-        My Skills
+      <Button 
+        title={'Adicionar'}
+        onPress={handleAddNewSkill} 
+      />
+
+      <Text style={[styles.title, {marginVertical: 20}]}>
+        Minhas Tecnologias
       </Text>
 
       <FlatList 
         data={mySkills}
-        keyExtractor={item => item}
+        keyExtractor={item => item.id}
         renderItem={({ item }) => (
-          <SkillCard skill={item}/>
+          <View style={styles.card}>
+            <SkillCard 
+              skill={item}
+            />
+            <TouchableOpacity 
+              style={styles.deleteButton}
+              onPress={() => handleRemoveSkill(item.id)}
+            >
+              <Text style={styles.deleteText}>Excluir</Text>
+            </TouchableOpacity>
+            <TouchableOpacity 
+              style={styles.editButton}
+              //onPress={() => handleRemoveSkill(item.id)}
+            >
+              <Text style={styles.editText}>Editar</Text>
+            </TouchableOpacity>
+          </View>
         )}
         showsVerticalScrollIndicator={false}
       >      
@@ -72,11 +120,43 @@ export function Home() {
 }
 
 const styles = StyleSheet.create({
+  card: {
+    backgroundColor: '#1F1E25',
+    borderRadius: 10,
+    marginVertical: 10
+  },
   container: {
     flex: 1, 
     backgroundColor: '#121015',
     paddingVertical: 70,
     paddingHorizontal: 30
+  },
+  deleteButton: {
+    backgroundColor: '#544B63',
+    padding: 15,
+    borderRadius: 10,
+    alignItems: 'center',
+    marginVertical: 5,
+    marginHorizontal: 30,
+  },
+  deleteText: {
+    color: '#C4AEE8',
+    fontSize: 17,
+    fontWeight: 'bold', 
+  },
+  editButton: {
+    backgroundColor: '#C4AEE8',
+    padding: 15,
+    borderRadius: 10,
+    alignItems: 'center',
+    marginVertical: 5,
+    marginHorizontal: 30,
+    marginBottom: 20
+  },
+  editText: {
+    color: '#544B63',
+    fontSize: 17,
+    fontWeight: 'bold', 
   },
   title: {
     color: '#fff',
@@ -89,7 +169,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     padding: Platform.OS === 'ios' ? 15 : 10,
     marginTop: 30,
-    borderRadius: 7
+    borderRadius: 10
   },
   greetings: {
     color: '#fff',
