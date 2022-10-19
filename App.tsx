@@ -8,6 +8,5 @@ export default function App() {
       <StatusBar backgroundColor={'#A370F7'} barStyle={'light-content'}></StatusBar>
       <Home/>
     </>
-    
   )
 }
